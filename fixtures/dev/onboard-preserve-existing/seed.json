@@ -1,0 +1,16 @@
+{
+  "employee_id": "E-207",
+  "event_id": "join-207",
+  "event_sequence": 12,
+  "effective_at": "2020-01-01T00:00:00Z",
+  "enabled": false,
+  "sessions": 0,
+  "grants": "employees",
+  "asset_id": "",
+  "asset_outage": true,
+  "intent": "onboard",
+  "role": "engineer",
+  "account_exists": true,
+  "inventory_id": "LAP-POOL-207",
+  "inventory_available": true
+}

@@ -1,0 +1,15 @@
+{
+  "employee_id": "E-211",
+  "administrative_status": "COMPENSATED",
+  "enabled": false,
+  "sessions": 0,
+  "grants": [],
+  "hr_status": "ONBOARDING_FAILED",
+  "collection_status": "NONE",
+  "collection_task": false,
+  "business_effects": 5,
+  "account_state": "TOMBSTONE",
+  "asset_id": "",
+  "inventory_available": true,
+  "reason": "ACTOR_BUDGET_EXHAUSTED"
+}

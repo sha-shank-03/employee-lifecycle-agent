@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "provenance": "authored-synthetic-not-a-model-recording",
+  "model": "synthetic-protocol-model",
+  "turns": [
+    {
+      "request_sha256": "db68d49c5722bdee95eb62d5b81e34b01655a4a84bb4e427bf88665a79123174",
+      "response": {
+        "id": "resp_1",
+        "status": "completed",
+        "output": [
+          {
+            "type": "function_call",
+            "id": "fc_1",
+            "call_id": "call_1",
+            "name": "inspect_employee",
+            "arguments": "{\"employee_id\":\"E-REPLAY\"}"
+          }
+        ]
+      }
+    },
+    {
+      "request_sha256": "ea71b965b90381180b825cc574ccefc3a8c611a6d7aa303e046a91efec29d9ce",
+      "response": {
+        "id": "resp_2",
+        "status": "completed",
+        "output": [
+          {
+            "type": "message",
+            "id": "msg_2",
+            "role": "assistant",
+            "status": "completed",
+            "content": [
+              {
+                "type": "output_text",
+                "text": "Operator review required."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

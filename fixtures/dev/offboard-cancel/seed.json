@@ -1,0 +1,11 @@
+{
+  "employee_id": "E-210",
+  "event_id": "leave-210",
+  "event_sequence": 12,
+  "effective_at": "2020-01-01T00:00:00Z",
+  "enabled": true,
+  "sessions": 3,
+  "grants": "employees,engineering",
+  "asset_id": "LAP-210",
+  "asset_outage": false
+}

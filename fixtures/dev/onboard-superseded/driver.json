@@ -1,0 +1,12 @@
+{
+  "approve": true,
+  "after_step": "add_role_grants",
+  "event": {
+    "employee_id": "E-209",
+    "event_id": "leave-209",
+    "event_sequence": 13,
+    "effective_at": "2020-01-01T00:00:00Z",
+    "intent": "offboard",
+    "role": "engineer"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "employee_id": "E-104",
+  "administrative_status": "BLOCKED",
+  "enabled": false,
+  "sessions": 0,
+  "grants": [],
+  "hr_status": "ACTIVE",
+  "collection_status": "NONE",
+  "collection_task": false,
+  "business_effects": 3
+}

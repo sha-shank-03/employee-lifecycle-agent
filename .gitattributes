@@ -1,0 +1,2 @@
+# Frozen source/data hashes cover exact bytes. Disable checkout/commit EOL conversion.
+* -text

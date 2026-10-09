@@ -1,0 +1,14 @@
+{
+  "employee_id": "E-204",
+  "administrative_status": "COMPLETED",
+  "enabled": true,
+  "sessions": 0,
+  "grants": [
+    "employees",
+    "engineering"
+  ],
+  "hr_status": "ONBOARDED",
+  "collection_status": "NONE",
+  "collection_task": false,
+  "business_effects": 5
+}

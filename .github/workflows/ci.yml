@@ -1,0 +1,38 @@
+# Prepared only. Hosted execution is unverified; no workflow has been dispatched.
+name: Offline lifecycle contracts
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  offline:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.11.9'
+          check-latest: false
+      - uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        with:
+          distribution: microsoft
+          java-version: '17.0.18'
+      - name: Offline build, provider, domain, freeze and fresh-copy checks
+        shell: bash
+        run: |
+          python dev.py doctor
+          python dev.py build
+          python dev.py test --suite all
+          python dev.py freeze-check
+          python dev.py check-public
+          python dev.py fresh-copy --out .build/ci-fresh-copy
+          python dev.py evaluate --split heldout --modes fixed,scripted-adaptive --repetitions 3 --out runs/ci-heldout
