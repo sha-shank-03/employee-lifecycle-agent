@@ -41,28 +41,46 @@ def build():
     return result.returncode
 
 
-def test(suite):
-    loader = unittest.TestLoader()
-    tests = unittest.TestSuite()
+def test_patterns(suite):
+    """Inspectable offline suite plan; this function imports/runs no test module."""
+    selected = {"u1-unit": ["test_gateway_u1_unit.py"], "u1-integration": ["test_gateway_u1_integration.py"],
+                "entra-unit": ["test_entra_u2a_unit.py"], "entra-loopback": ["test_entra_u2a_loopback.py"],
+                "packaging-unit": ["test_public_unit.py", "test_current_source_unit.py"],
+                "u2b-unit": ["test_u2b_unit.py"], "u2b-catalog-unit": ["test_u2b_catalog_unit.py"]}
+    if suite in selected: return selected[suite]
+    if suite not in {"unit", "m1", "m2", "all", "provider-contract"}: raise ValueError("unknown test suite")
+    patterns = []
     if suite != "provider-contract":
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_unit.py", top_level_dir=str(ROOT)))
+        patterns.append("test_unit.py")
     if suite in {"unit", "m2", "all"}:
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_m2_unit.py", top_level_dir=str(ROOT)))
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_audit_unit.py", top_level_dir=str(ROOT)))
+        patterns.extend(("test_m2_unit.py", "test_audit_unit.py"))
     if suite in {"m1", "m2", "all"}:
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_integration.py", top_level_dir=str(ROOT)))
+        patterns.append("test_integration.py")
     if suite in {"m2", "all"}:
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_m2_integration.py", top_level_dir=str(ROOT)))
+        patterns.append("test_m2_integration.py")
     if suite in {"unit", "all", "provider-contract"}:
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_provider_unit.py", top_level_dir=str(ROOT)))
+        patterns.append("test_provider_unit.py")
     if suite in {"unit", "all"}:
-        for pattern in ("test_metrics_unit.py", "test_public_unit.py"):
-            tests.addTests(loader.discover(str(ROOT / "tests"), pattern=pattern, top_level_dir=str(ROOT)))
+        patterns.extend(("test_gateway_u1_unit.py", "test_metrics_unit.py", "test_public_unit.py",
+                         "test_entra_u2a_unit.py", "test_current_source_unit.py", "test_u2b_unit.py", "test_u2b_catalog_unit.py"))
     if suite in {"all", "provider-contract"}:
-        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_provider_http.py", top_level_dir=str(ROOT)))
+        patterns.append("test_provider_http.py")
+    if suite == "all": patterns.append("test_entra_u2a_loopback.py")
+    return patterns
+
+
+def test(suite):
+    loader, tests = unittest.TestLoader(), unittest.TestSuite()
+    for pattern in test_patterns(suite):
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern=pattern, top_level_dir=str(ROOT)))
     result = unittest.TextTestRunner(verbosity=2).run(tests)
-    print(json.dumps({"suite": suite, "tests_run": result.testsRun, "failures": len(result.failures),
-                      "errors": len(result.errors), "skipped": len(result.skipped), "live_model_calls": 0}))
+    report = {"suite": suite, "tests_run": result.testsRun, "failures": len(result.failures),
+              "errors": len(result.errors), "skipped": len(result.skipped), "live_model_calls": 0}
+    if suite.startswith("u1-"): report["mode"] = "local-double"
+    if suite.startswith("entra-"): report["mode"] = "injected-double"
+    if suite == "packaging-unit": report["mode"] = "source-pure"
+    if suite in {"u2b-unit","u2b-catalog-unit"}: report["mode"] = "source-pure-synthetic-controls"
+    print(json.dumps(report))
     return 0 if result.wasSuccessful() and not result.skipped else 1
 
 
@@ -71,6 +89,8 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("doctor"); sub.add_parser("build")
     sub.add_parser("freeze-check")
+    sub.add_parser("u1-source-check")
+    sub.add_parser("source-check")
     sub.add_parser("check-public")
     fresh = sub.add_parser("fresh-copy")
     fresh.add_argument("--out", required=True)
@@ -80,7 +100,8 @@ def main(argv=None):
     evaluate.add_argument("--repetitions", type=int, default=1)
     evaluate.add_argument("--out", required=True)
     check = sub.add_parser("test")
-    check.add_argument("--suite", choices=["unit", "m1", "m2", "all", "provider-contract"], default="unit")
+    check.add_argument("--suite", choices=["unit", "m1", "m2", "all", "provider-contract", "u1-unit", "u1-integration",
+                                          "entra-unit", "entra-loopback", "packaging-unit", "u2b-unit", "u2b-catalog-unit"], default="unit")
     verifier = sub.add_parser("verify")
     verifier.add_argument("--run-dir", required=True); verifier.add_argument("--expect", required=True)
     args = parser.parse_args(argv)
@@ -91,6 +112,12 @@ def main(argv=None):
         if args.command == "doctor": return doctor()
         if args.command == "build": return build()
         if args.command == "test": return test(args.suite)
+        if args.command == "u1-source-check":
+            from evaluation.u1_source import check_u1_source
+            print(json.dumps(check_u1_source(), indent=2)); return 0
+        if args.command == "source-check":
+            from evaluation.current_source import check_current_source
+            print(json.dumps(check_current_source(), indent=2)); return 0
         if args.command == "freeze-check":
             from evaluation.freeze import check_freeze
             print(json.dumps(check_freeze(), indent=2)); return 0

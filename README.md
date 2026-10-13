@@ -1,5 +1,7 @@
 # Employee lifecycle agent
 
+**Current source status (12 October 2026):** Main accepted earlier U1 source2/source3 packaging. On the later 170-file U2-A packaging candidate, seven complete groups passed 215 unique root methods; a Gateway deadline test failed because no HTTP request was observed. The earlier full-suite command also exceeded its 300-second cap. This version preserves that source and both failures, and separates cold startup from confirmed stalled/trickled response checks. Production transport, its deadline reserve, and Java/domain behavior are unchanged. This correction is source/pure only; its native phases, complete fresh-copy and hosted CI remain pending. See [phase timing and packaging limits](docs/u2a-packaging.md#transport-phase-correction) and [Entra contract scope](docs/u2a-entra-contract.md). Live models, genuine Entra and final upgrade acceptance are unexecuted. All v1 results below belong to the published pre-upgrade source.
+
 A local demonstration of approved employee onboarding and offboarding across fictional HR, identity and asset services. Java controls authorization, durable mutations and safety cleanup. A Python provider chooses typed tools in a bounded loop. Offline decisions and demo approvals are **scripted**, with no model API calls.
 
 The original contribution is the business correctness fixture: a departure must revoke modeled access, expose incomplete asset work, and recover a committed step after its reply is lost. Asset failure never restores access. Creating a collection task does not mean a laptop was physically returned.
@@ -14,14 +16,15 @@ Use Java 17 **JDK** (`java` and `javac`, selected by `JAVA_HOME` or PATH) and Py
 py -3.11 dev.py doctor
 py -3.11 dev.py build
 py -3.11 dev.py test --suite unit
-py -3.11 dev.py freeze-check
+py -3.11 dev.py source-check
+py -3.11 -m evaluation.u2b_catalog_controls
 py -3.11 -m agent.cli demo --scenario offboard-success --provider scripted --run-dir runs/demo-departure
 py -3.11 -m agent.cli demo --scenario onboard-compensation --provider scripted --run-dir runs/demo-compensation
 ```
 
-This offline quickstart passed in a fresh copy of the public source on Windows, without prior runs, build caches or private helpers. Linux/macOS use `python3.11` in place of `py -3.11`; those platforms and hosted CI remain unexecuted.
+The original v1, U1 source3 and preceding U2A local packaging passed independently in fresh public copies on Windows. U2A's root coverage was 104 current plus 167 unchanged historical methods; its nine copy groups included 208 repeated methods. Main subsequently accepted the first four U2B native slots: two completed departures and two safe joining compensations. [The U2B catalog continuation](docs/u2b-catalog.md) retains those original bindings and predeclares the remaining 18 records/36 policy slots, with an observation-driven deterministic baseline and equal offline boundaries. Remaining workflows and live comparisons are unexecuted. Linux/macOS use `python3.11` in place of `py -3.11`; those platforms and hosted CI remain unexecuted.
 
-The local validation commands are:
+The local validation commands are below. The original heldout scorer intentionally refuses the current upgrade source; its frozen results belong to the published v1 commit. The first two exposed U2B records were independently reviewed under their original source. Pure controls run with `py -3.11 dev.py test --suite u2b-unit` or `--suite u2b-catalog-unit`. The standalone `evaluation.u2b_catalog_controls` demo models bookkeeping with synthetic fixtures and explicitly verifies no native outcome. It needs no saved runs, cached classes or private coordination. Production catalog `plan`, `preview`, `init`, `report` and `run` require authentic local native evidence; the repository ships only the redacted historical review and bindings. Missing or altered raw files are rejected. Continuation execution requires a separate matching main grant. No full catalog or live quality/uplift conclusion is available.
 
 ```powershell
 py -3.11 dev.py test --suite all

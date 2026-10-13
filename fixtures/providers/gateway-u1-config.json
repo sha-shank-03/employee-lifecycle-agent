@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "version": "gateway-u1-1",
+  "mode": "local-double",
+  "model": "local/synthetic-tool-double",
+  "automatic_retries": 0,
+  "inference_allocation_inr": 0,
+  "actor_cap_ms": 300000,
+  "cleanup_cap_ms": 60000,
+  "session_reserve_ms": 10000,
+  "turn_reserve_ms": 25000,
+  "provider_timeout_ms": 20000,
+  "tool_timeout_ms": 5000,
+  "turn_limit": 12,
+  "output_token_cap": 2048
+}

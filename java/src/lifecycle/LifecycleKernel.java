@@ -21,13 +21,14 @@ final class LifecycleKernel {
     static final List<String> JOIN = List.of("prepare_account", "add_role_grants", "reserve_asset", "enable_login", "complete_onboarding_hr");
     static final List<String> CLEANUP = List.of("compensate_account", "undo_role_grants", "release_asset", "fail_onboarding_hr");
     static final Map<String,String> BUNDLES = Map.of("engineer","employees,engineering","support","employees,support");
-    static final Set<String> ACTOR_TOOLS = Set.of("inspect_employee","read_policy","propose_plan","workflow_status","execute_step","verify_outcome","request_handoff","begin_turn","charge_wait","stop_actor");
-    static final Set<String> OPERATOR_TOOLS = Set.of("init","review","approve","report","cancel","import_event","activate_event","advance_clock");
+    static final Set<String> ACTOR_TOOLS = Set.of("inspect_employee","read_policy","propose_plan","workflow_status","execute_step","verify_outcome","request_handoff","begin_turn","charge_wait","stop_actor","gateway_session");
+    static final Set<String> OPERATOR_TOOLS = Set.of("init","review","approve","report","cancel","import_event","activate_event","advance_clock","configure_gateway");
     static final Set<String> RUNNING = Set.of("RUNNING","RETRY_PENDING");
     private final SnapshotStore workflows, hrStore, identityStore, assetStore;
     private final Path runDirectory;
     private final String crashAfter;
     private final Clock clock;
+    private long cleanupDeadlineNanos;
     static final class Denied extends Exception {
         final String code;
         Denied(String code) { super(code); this.code = code; }
@@ -60,6 +61,8 @@ final class LifecycleKernel {
             case "request_handoff","stop_actor" -> Set.of("tool","workflow_id","reason_code");
             case "begin_turn" -> Set.of("tool");
             case "charge_wait" -> Set.of("tool","milliseconds");
+            case "configure_gateway" -> Set.of("tool","workflow_id","config_sha256");
+            case "gateway_session" -> Set.of("tool","workflow_id");
             case "import_event" -> Set.of("tool","employee_id","event_id","event_sequence","effective_at","intent","role");
             case "advance_clock" -> Set.of("tool","workflow_id","seconds");
             default -> Set.of("tool","workflow_id");
@@ -74,6 +77,15 @@ final class LifecycleKernel {
         var s=workflows.read();
         if (r.containsKey("employee_id")&&!r.get("employee_id").equals(s.get("employee_id"))) throw new Denied("EMPLOYEE_SCOPE_DENIED");
         if (r.containsKey("workflow_id")&&!r.get("workflow_id").equals(s.get("workflow_id"))) throw new Denied("WORKFLOW_SCOPE_DENIED");
+        if(s.containsKey("budget_policy")&&Set.of("import_event","activate_event").contains(tool)) throw new Denied("U1_EVENT_SCOPE_DENIED");
+        if(s.containsKey("budget_policy")&&mode.equals("actor")&&!Set.of("gateway_session","stop_actor").contains(tool)&&!s.get("actor_session").equals("true")) throw new Denied("GATEWAY_SESSION_REQUIRED");
+        if (tool.equals("configure_gateway")) return configureGateway(r.get("config_sha256"));
+        if (tool.equals("gateway_session")) {
+            if (!s.getOrDefault("budget_policy","").equals("gateway-u1-1")) throw new Denied("GATEWAY_NOT_CONFIGURED");
+            if(!reserveCleanup(2000)) throw new Denied("CLEANUP_BUDGET_EXHAUSTED");
+            reserveActor(10000); s=workflows.read(); s.put("actor_session","true");
+            s.put("provider_pending","false"); workflows.save(s); return status();
+        }
         if (tool.equals("begin_turn")) {
             try { chargeTurn(true); return status(); }
             catch (Denied denied) { var result=status(); result.put("code",denied.code); return result; }
@@ -81,7 +93,7 @@ final class LifecycleKernel {
         if (tool.equals("charge_wait")) {
             if (!r.get("milliseconds").matches("[0-9]{1,4}") || Integer.parseInt(r.get("milliseconds"))>2000) throw new Denied("INVALID_ARGUMENTS");
             long reserved=Long.parseLong(s.get("active_reserved_ms"))+Integer.parseInt(r.get("milliseconds"));
-            if (reserved>120000) { safetyStop("ACTOR_BUDGET_EXHAUSTED"); throw new Denied("ACTOR_BUDGET_EXHAUSTED"); }
+            if (reserved>actorCap(s)) { safetyStop("ACTOR_BUDGET_EXHAUSTED"); throw new Denied("ACTOR_BUDGET_EXHAUSTED"); }
             s.put("active_reserved_ms",Long.toString(reserved)); workflows.save(s); return status();
         }
         if (mode.equals("actor")&&!tool.equals("stop_actor")) chargeTool();
@@ -189,11 +201,39 @@ final class LifecycleKernel {
     }
     private void chargeTurn(boolean session) throws Exception {
         var s=workflows.read();
-        if (Integer.parseInt(s.get("provider_turns"))>=Integer.parseInt(s.get("turn_limit"))||Long.parseLong(s.get("active_reserved_ms"))+7000>120000) {
+        long reservation=s.containsKey("budget_policy")?25000:7000;
+        if (Integer.parseInt(s.get("provider_turns"))>=Integer.parseInt(s.get("turn_limit"))||Long.parseLong(s.get("active_reserved_ms"))+reservation>actorCap(s)) {
             safetyStop("ACTOR_BUDGET_EXHAUSTED"); throw new Denied("ACTOR_BUDGET_EXHAUSTED");
         }
-        s.put("provider_turns",Integer.toString(Integer.parseInt(s.get("provider_turns"))+1)); s.put("active_reserved_ms",Long.toString(Long.parseLong(s.get("active_reserved_ms"))+7000));
+        s.put("provider_turns",Integer.toString(Integer.parseInt(s.get("provider_turns"))+1)); s.put("active_reserved_ms",Long.toString(Long.parseLong(s.get("active_reserved_ms"))+reservation));
         s.put("provider_pending","true"); if (session) s.put("actor_session","true"); workflows.save(s);
+    }
+    private static long actorCap(Map<String,String> s) { return s.containsKey("budget_policy")?300000:120000; }
+    private void reserveActor(long milliseconds) throws Exception {
+        var s=workflows.read(); long total=Long.parseLong(s.get("active_reserved_ms"))+milliseconds;
+        if(total>actorCap(s)) throw new Denied("ACTOR_BUDGET_EXHAUSTED");
+        s.put("active_reserved_ms",Long.toString(total)); workflows.save(s);
+    }
+    private Map<String,String> configureGateway(String hash) throws Exception {
+        var s=workflows.read();
+        if(!hash.matches("[0-9a-f]{64}")||!s.get("intent").equals("offboard")) throw new Denied("INVALID_GATEWAY_CONFIG");
+        if(s.containsKey("budget_policy")) {
+            if(!hash.equals(s.get("gateway_config_sha256"))) throw new Denied("GATEWAY_CONFIG_IMMUTABLE");
+            return status();
+        }
+        if(!s.get("administrative_status").equals("RECEIVED")||!s.get("digest").isEmpty()
+            ||!s.get("actor_calls").equals("0")||!s.get("provider_turns").equals("0")||!s.get("active_reserved_ms").equals("0")) throw new Denied("GATEWAY_CONFIG_TOO_LATE");
+        s.put("budget_policy","gateway-u1-1"); s.put("gateway_config_sha256",hash);
+        s.put("cleanup_reserved_ms","0"); s.put("turn_limit","12"); workflows.save(s); return status();
+    }
+    private boolean reserveCleanup(long milliseconds) throws Exception {
+        var s=workflows.read(); if(!s.containsKey("budget_policy")) return true;
+        // A safety batch reserves its entire remaining allowance before effects.
+        // A crash therefore cannot replenish unacknowledged elapsed cleanup time.
+        if(cleanupDeadlineNanos!=0) return System.nanoTime()+milliseconds*1000000L<=cleanupDeadlineNanos;
+        long total=Long.parseLong(s.get("cleanup_reserved_ms"))+milliseconds;
+        if(total>60000) return false;
+        s.put("cleanup_reserved_ms",Long.toString(total)); workflows.save(s); return true;
     }
     private void chargeTool() throws Exception {
         var s=workflows.read();
@@ -225,6 +265,9 @@ final class LifecycleKernel {
         for (String k:List.of("event_id","event_sequence","epoch","effective_at","role","hr_version","identity_version","assets_version","grants","asset_id","account_exists","enabled","sessions")) s.put("approved."+k,facts.get(k));
         s.put("approved.inventory_id",assetStore.read().get("inventory_id")); s.put("approved.inventory_available",assetStore.read().get("inventory_available"));
         s.put("approved.target_grants",intent.equals("onboard")?BUNDLES.get(s.get("role")):"");
+        if(s.containsKey("budget_policy")) {
+            s.put("approved.budget_policy",s.get("budget_policy")); s.put("approved.gateway_config_sha256",s.get("gateway_config_sha256"));
+        }
         for (String name:List.of("hr","identity","assets")) s.put("expected."+name,facts.get(name+"_version"));
         s.put("digest",digest(planFields(s))); s.put("administrative_status","AWAITING_APPROVAL"); workflows.save(s); return status();
     }
@@ -301,6 +344,8 @@ final class LifecycleKernel {
     private boolean applyStep(String a,boolean safety) throws Exception {
         var s=workflows.read(); String name=serviceFor(a); int attempts=Integer.parseInt(s.get("attempts."+a));
         if(attempts>=3||(safety&&Integer.parseInt(s.get("safety_calls"))>=12)) return false;
+        if(safety&&!reserveCleanup(5000)) throw new Denied("CLEANUP_BUDGET_EXHAUSTED");
+        s=workflows.read();
         crash("before_intent",a); s.put("step."+a,"INTENT"); s.put("attempts."+a,Integer.toString(attempts+1));
         if(safety) s.put("safety_calls",Integer.toString(Integer.parseInt(s.get("safety_calls"))+1));
         workflows.save(s); crash("after_intent",a);
@@ -369,6 +414,12 @@ final class LifecycleKernel {
     }
     private void runSafety() throws Exception {
         var initial=workflows.read(); List<String> actions=initial.get("intent").equals("onboard")?CLEANUP:STEPS.subList(0,3);
+        if(initial.containsKey("budget_policy")&&cleanupDeadlineNanos==0) {
+            long remaining=60000-Long.parseLong(initial.get("cleanup_reserved_ms"));
+            if(remaining<=0) { blockSafety("CLEANUP_BUDGET_EXHAUSTED"); return; }
+            initial.put("cleanup_reserved_ms","60000"); workflows.save(initial);
+            cleanupDeadlineNanos=System.nanoTime()+remaining*1000000L;
+        }
         for(String a:actions) {
             var s=workflows.read(); if(done(s,a)) continue;
             if(a.equals("fail_onboarding_hr")&&!sameEvent(s)) continue;
@@ -376,7 +427,12 @@ final class LifecycleKernel {
             if(!storeFor(serviceFor(a)).read().get("version").equals(s.get("expected."+serviceFor(a)))) { blockSafety("STALE_APPROVAL"); return; }
             while(!done(workflows.read(),a)&&Integer.parseInt(workflows.read().get("attempts."+a))<3) {
                 long wait=Long.parseLong(workflows.read().get("due."+a))-now().toEpochMilli();
-                if(wait>0) Thread.sleep(Math.min(wait,2000));
+                if(Integer.parseInt(workflows.read().get("safety_calls"))>=12) { blockSafety("CLEANUP_BUDGET_EXHAUSTED"); return; }
+                if(wait>0) {
+                    long bounded=Math.min(wait,2000);
+                    if(!reserveCleanup(bounded)) { blockSafety("CLEANUP_BUDGET_EXHAUSTED"); return; }
+                    Thread.sleep(bounded);
+                }
                 try { if(applyStep(a,true)) break; } catch(Denied d) { blockSafety(d.code); return; }
             }
             if(!done(workflows.read(),a)) { blockSafety("CLEANUP_SERVICE_UNAVAILABLE"); return; }
@@ -402,6 +458,7 @@ final class LifecycleKernel {
     private Map<String,String> status() {
         var s=workflows.read(); var a=assetStore.read(); var r=new HashMap<String,String>(); r.put("code","OK");
         for(String k:List.of("workflow_id","employee_id","digest","intent","role","reason","actor_calls","provider_turns","active_reserved_ms","safety_calls")) r.put(k,s.get(k));
+        if(s.containsKey("budget_policy")) for(String k:List.of("budget_policy","gateway_config_sha256","cleanup_reserved_ms")) r.put(k,s.get(k));
         String admin=s.get("administrative_status");
         if(RUNNING.contains(admin)&&now().isBefore(Instant.parse(s.get("approved.effective_at")))) admin="WAITING_EFFECTIVE_TIME";
         r.put("administrative_status",admin); r.put("access_status",accessRevoked()?"REVOKED":identityStore.read().get("enabled").equals("true")?"ACTIVE":"DISABLED");
@@ -418,7 +475,13 @@ final class LifecycleKernel {
         if(!s.keySet().containsAll(Set.of("workflow_id","employee_id","administrative_status","actor_calls","digest","reason","intent","role","epoch","provider_turns","active_reserved_ms","safety_calls","clock_offset_seconds","turn_limit","actor_session","provider_pending"))) throw new IllegalStateException("Incomplete workflow snapshot");
         if(!BUNDLES.containsKey(s.get("role"))||!Set.of("onboard","offboard").contains(s.get("intent"))) throw new IllegalStateException("Invalid workflow intent");
         for(String k:List.of("actor_calls","provider_turns","active_reserved_ms","safety_calls","clock_offset_seconds","turn_limit")) if(Long.parseLong(s.get(k))<0) throw new IllegalStateException("Invalid persisted budget");
-        if(Integer.parseInt(s.get("actor_calls"))>32||Integer.parseInt(s.get("provider_turns"))>24||Long.parseLong(s.get("active_reserved_ms"))>120000||Integer.parseInt(s.get("safety_calls"))>12) throw new IllegalStateException("Exceeded persisted budget");
+        if(Integer.parseInt(s.get("actor_calls"))>32||Integer.parseInt(s.get("provider_turns"))>Integer.parseInt(s.get("turn_limit"))||Integer.parseInt(s.get("turn_limit"))>24||Long.parseLong(s.get("active_reserved_ms"))>actorCap(s)||Integer.parseInt(s.get("safety_calls"))>12) throw new IllegalStateException("Exceeded persisted budget");
+        if(s.containsKey("budget_policy")) {
+            if(!s.get("budget_policy").equals("gateway-u1-1")||!s.get("intent").equals("offboard")||!s.get("turn_limit").equals("12")
+                ||!s.getOrDefault("gateway_config_sha256","").matches("[0-9a-f]{64}")
+                ||!s.getOrDefault("cleanup_reserved_ms","").matches("[0-9]{1,5}")||Long.parseLong(s.get("cleanup_reserved_ms"))>60000) throw new IllegalStateException("Invalid Gateway budget policy");
+            if(!s.get("digest").isEmpty()&&(!s.get("budget_policy").equals(s.get("approved.budget_policy"))||!s.get("gateway_config_sha256").equals(s.get("approved.gateway_config_sha256")))) throw new IllegalStateException("Gateway approval config mismatch");
+        } else if(s.containsKey("cleanup_reserved_ms")||s.containsKey("gateway_config_sha256")) throw new IllegalStateException("Partial Gateway configuration");
         for(var store:List.of(hrStore,identityStore,assetStore)) if(!store.read().get("employee_id").equals(s.get("employee_id"))||Long.parseLong(store.read().get("version"))<1) throw new IllegalStateException("Invalid service snapshot");
         for(String k:allSteps()) { if(!Set.of("PENDING","INTENT","DONE").contains(s.get("step."+k))||Integer.parseInt(s.get("attempts."+k))<0||Integer.parseInt(s.get("attempts."+k))>3) throw new IllegalStateException("Invalid step snapshot"); Long.parseLong(s.get("due."+k)); }
         if(!Set.of("true","false").contains(identityStore.read().get("enabled"))||Integer.parseInt(identityStore.read().get("sessions"))<0) throw new IllegalStateException("Invalid identity snapshot");

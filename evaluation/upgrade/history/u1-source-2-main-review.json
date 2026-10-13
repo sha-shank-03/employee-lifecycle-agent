@@ -1,0 +1,111 @@
+{
+  "at": "2026-10-12T06:20:50.951694+00:00",
+  "milestone": "U1",
+  "decision": "passed",
+  "independent_main": true,
+  "test_methods": 208,
+  "tests_breakdown": {
+    "regression_and_pure": 189,
+    "native_u1": 19
+  },
+  "state_assertions": 260,
+  "negative_controls": 5,
+  "source_manifest_sha256": "a77f12e5d28efa97be9850252886417a194bde328fb762ec5e4c168ef5788295",
+  "source_review": [
+    "Strict closed-schema function-call proposal loop; Java owns domain effects and exact plan approval.",
+    "Persisted active/cleanup/call reservations survive restart; lost Java reply reconciles the committed ledger rather than duplicating an effect.",
+    "Nine-variable Windows transport environment retains OS runtime values and excludes key/proxy/Python-startup values; no weakened public-file rules.",
+    "Direct XML generations, independent plan/step hashes, exact identity/HR/asset postconditions and audit/ledger receipts agree across nine scenarios."
+  ],
+  "original_failures_preserved": true,
+  "limitations": [
+    "Synthetic local-double inference and scripted fixture approval, no actual provider or external Entra test.",
+    "Memory/process maxima not measured; cleanup evidence covers owned saved subprocess records.",
+    "Separate fresh-copy and U2/U3 gates remain pending."
+  ],
+  "unexecuted": [
+    "Separate fresh-copy runtime environment and copied quickstart",
+    "U2 Entra sandbox connector and fresh evaluation/baseline",
+    "U3 authorized live inference/main unseen evaluation",
+    "Final packaging/hosted CI/publication"
+  ],
+  "resource_measurement": "Whole process-tree peak not measured. Native owned-child cleanup and total-deadline assertions exercised.",
+  "live_model_calls": 0,
+  "external_sandbox_calls": 0,
+  "schema": 1,
+  "original_main_review_sha256": "711f4aa3480ea9a89e4ed4b4a4238751058566a485e0692fdbe6c62137df7e96",
+  "commands": [
+    {
+      "logical_command": "py -3.11 dev.py u1-source-check",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 1.25
+    },
+    {
+      "logical_command": "py -3.11 dev.py check-public",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.42199999996228144
+    },
+    {
+      "logical_command": "py -3.11 dev.py doctor",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 1.1089999999967404
+    },
+    {
+      "logical_command": "py -3.11 dev.py build",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 1.6410000000032596
+    },
+    {
+      "logical_command": "py -3.11 dev.py test --suite all",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 227.21900000004098
+    },
+    {
+      "logical_command": "py -3.11 dev.py test --suite u1-integration",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 59.03099999995902
+    },
+    {
+      "logical_command": "py -3.11 -m agent.cli demo --scenario offboard-success --provider scripted --run-dir runs/main-u1-1012-legacy-offboard",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 2.9380000000237487
+    },
+    {
+      "logical_command": "py -3.11 -m agent.cli demo --scenario onboard-compensation --provider scripted --run-dir runs/main-u1-1012-legacy-compensation",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 6.5310000000172295
+    },
+    {
+      "logical_command": "py -3.11 -m agent.u1_demo --out runs/main-u1-1012-gateway",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 5.407000000006519
+    },
+    {
+      "logical_command": "py -3.11 dev.py verify --run-dir runs/main-u1-1012-gateway --expect fixtures/dev/offboard-success/expected.json",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.18700000003445894
+    },
+    {
+      "logical_command": "py -3.11 dev.py check-public",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.42199999996228144
+    },
+    {
+      "logical_command": "py -3.11 dev.py u1-source-check",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.26500000001396984
+    }
+  ]
+}

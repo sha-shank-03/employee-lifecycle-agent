@@ -9,7 +9,21 @@ import sys
 import time
 from agent.bridge import ROOT
 from agent.cli import write_json
+from agent.gateway import _transport_environment
 from .public import check_public, public_files
+
+
+def fresh_copy_environment():
+    """Reuse Windows runtime paths; add only explicit Java/tool resolution values."""
+    environment = _transport_environment()
+    names = ("PATH", "JAVA_HOME")
+    if sys.platform == "win32":
+        names += ("COMSPEC", "PATHEXT")
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            environment[name] = value
+    return environment
 
 
 def copy_source(out, root=ROOT):
@@ -32,21 +46,30 @@ def copy_source(out, root=ROOT):
     return hashes
 
 
-def fresh_copy(out):
-    check_public()
-    folder = Path(out).resolve()
-    hashes = copy_source(folder)
-    # Ignore Python startup env/user packages; retain only installed runtime/OS resolution.
-    allowed = {"PATH", "JAVA_HOME", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "COMSPEC", "PATHEXT", "USERPROFILE"}
-    environment = {k: v for k, v in os.environ.items() if k.upper() in allowed}
-    commands = [
-        ["dev.py", "check-public"], ["dev.py", "freeze-check"], ["dev.py", "doctor"], ["dev.py", "build"],
+def quickstart_commands():
+    """Pure, inspectable copied-runtime plan; calling it runs no quickstart."""
+    return [
+        ["dev.py", "check-public"], ["dev.py", "source-check"], ["dev.py", "doctor"], ["dev.py", "build"],
         ["dev.py", "test", "--suite", "unit"],
         ["-m", "agent.cli", "demo", "--scenario", "offboard-success", "--provider", "scripted", "--run-dir", "runs/fresh-departure"],
         ["-m", "agent.cli", "demo", "--scenario", "onboard-compensation", "--provider", "scripted", "--run-dir", "runs/fresh-compensation"],
         ["dev.py", "verify", "--run-dir", "runs/fresh-departure", "--expect", "fixtures/dev/offboard-success/expected.json"],
         ["dev.py", "verify", "--run-dir", "runs/fresh-compensation", "--expect", "fixtures/dev/onboard-compensation/expected.json"],
+        ["-m", "agent.u1_demo", "--out", "runs/fresh-u1-double"],
+        ["dev.py", "test", "--suite", "u1-integration"],
+        ["dev.py", "test", "--suite", "entra-loopback"],
     ]
+
+
+def fresh_copy(out):
+    check_public()
+    from evaluation.current_source import check_current_source
+    check_current_source()
+    folder = Path(out).resolve()
+    hashes = copy_source(folder)
+    # Ignore Python startup env/user packages; retain only installed runtime/OS resolution.
+    environment = fresh_copy_environment()
+    commands = quickstart_commands()
     results, evidence = [], ROOT / "work/fresh-copy-evidence"
     evidence.mkdir(parents=True, exist_ok=True)
     report_path = evidence / (folder.name + ".json")

@@ -26,13 +26,13 @@ jobs:
         with:
           distribution: microsoft
           java-version: '17.0.18'
-      - name: Offline build, provider, domain, freeze and fresh-copy checks
+      - name: Offline build, provider, domain, Entra, current source and fresh-copy checks
         shell: bash
         run: |
           python dev.py doctor
           python dev.py build
           python dev.py test --suite all
-          python dev.py freeze-check
+          python dev.py source-check
+          python dev.py test --suite u1-integration
           python dev.py check-public
           python dev.py fresh-copy --out .build/ci-fresh-copy
-          python dev.py evaluate --split heldout --modes fixed,scripted-adaptive --repetitions 3 --out runs/ci-heldout

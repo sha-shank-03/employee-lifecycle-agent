@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-12T07:02:10.016357+00:00",
+  "milestone": "U1-packaging-source3",
+  "decision": "passed",
+  "reviewer": "main",
+  "source_manifest_sha256": "934c13c0d1c5946c7bed9e20ce004ef68a50244cce12de448276986b88fb9730",
+  "outer_commands": 6,
+  "copied_commands": 10,
+  "copied_test_methods": 130,
+  "copied_public_files": 148,
+  "raw_state_assertions": 153,
+  "oracle_negative_controls": 9,
+  "evidence": [
+    "execution-summary.json",
+    "independent-state-review.json",
+    "cleanup-snapshot.json"
+  ],
+  "findings": [
+    "Copied runtime inherits only explicit OS/runtime allowlist and Java resolution; source2 transport source is unchanged.",
+    "Fresh standalone copied Java build, unit suite, offboarding, onboarding compensation and provider local-double journey passed.",
+    "Main direct XML/ledger oracle verifies exact employee state, bound receipts, effect counts and failed onboarding compensation.",
+    "All148 copied hashes match source; quarantine hashes preserved by source/audit command."
+  ],
+  "limitations": [
+    "Synthetic/offline demos and simulated fixture approval only.",
+    "No actual Entra or live model; historical resource peaks unmeasured."
+  ],
+  "unexecuted": [
+    "Real Entra sandbox",
+    "Live inference and unseen evaluation",
+    "Hosted CI/publication"
+  ],
+  "live_model_calls": 0,
+  "external_sandbox_calls": 0,
+  "schema": 1,
+  "original_main_review_sha256": "bc0924f9f69adadbd54df9807b046b764af8666f70640ff7af754234cf727392"
+}

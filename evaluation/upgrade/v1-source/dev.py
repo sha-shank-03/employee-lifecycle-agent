@@ -1,0 +1,119 @@
+"""Java 17/Python 3.11 standard-library build and verification commands."""
+import argparse
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+from agent.bridge import ROOT, java_executable
+
+
+def doctor():
+    versions = {}
+    for name in ("java", "javac"):
+        process = subprocess.run([java_executable(name), "-version"], capture_output=True, text=True, timeout=10)
+        if process.returncode:
+            raise RuntimeError(f"{name} version command failed: {process.returncode}")
+        text = (process.stdout + process.stderr).strip()
+        if not ("17." in text or "17 " in text):
+            raise RuntimeError(f"Select a Java 17 JDK; found {text}")
+        versions[name] = text.splitlines()[0]
+    scratch = ROOT / ".build"
+    scratch.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="doctor-", dir=scratch) as directory:
+        command = [java_executable(), "-Xmx256m", "--source", "17", str(ROOT / "java/src/lifecycle/AtomicMoveDoctor.java"), directory]
+        process = subprocess.run(command, capture_output=True, text=True, timeout=15)
+        if process.returncode or "ATOMIC_MOVE_SUPPORTED" not in process.stdout:
+            raise RuntimeError(f"Java atomic-move probe failed: {process.stderr.strip()}")
+    print(json.dumps({"python": sys.version.split()[0], **versions,
+                      "atomic_move": "supported on probed local filesystem", "downloads": 0}, indent=2))
+    return 0
+
+
+def build():
+    classes = ROOT / ".build/classes"
+    classes.mkdir(parents=True, exist_ok=True)
+    sources = sorted((ROOT / "java/src").rglob("*.java"))
+    command = [java_executable("javac"), "--release", "17", "-encoding", "UTF-8", "-d", str(classes), *map(str, sources)]
+    result = subprocess.run(command, timeout=30)
+    print(f"javac exit={result.returncode}; source files={len(sources)}")
+    return result.returncode
+
+
+def test(suite):
+    loader = unittest.TestLoader()
+    tests = unittest.TestSuite()
+    if suite != "provider-contract":
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_unit.py", top_level_dir=str(ROOT)))
+    if suite in {"unit", "m2", "all"}:
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_m2_unit.py", top_level_dir=str(ROOT)))
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_audit_unit.py", top_level_dir=str(ROOT)))
+    if suite in {"m1", "m2", "all"}:
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_integration.py", top_level_dir=str(ROOT)))
+    if suite in {"m2", "all"}:
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_m2_integration.py", top_level_dir=str(ROOT)))
+    if suite in {"unit", "all", "provider-contract"}:
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_provider_unit.py", top_level_dir=str(ROOT)))
+    if suite in {"unit", "all"}:
+        for pattern in ("test_metrics_unit.py", "test_public_unit.py"):
+            tests.addTests(loader.discover(str(ROOT / "tests"), pattern=pattern, top_level_dir=str(ROOT)))
+    if suite in {"all", "provider-contract"}:
+        tests.addTests(loader.discover(str(ROOT / "tests"), pattern="test_provider_http.py", top_level_dir=str(ROOT)))
+    result = unittest.TextTestRunner(verbosity=2).run(tests)
+    print(json.dumps({"suite": suite, "tests_run": result.testsRun, "failures": len(result.failures),
+                      "errors": len(result.errors), "skipped": len(result.skipped), "live_model_calls": 0}))
+    return 0 if result.wasSuccessful() and not result.skipped else 1
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("doctor"); sub.add_parser("build")
+    sub.add_parser("freeze-check")
+    sub.add_parser("check-public")
+    fresh = sub.add_parser("fresh-copy")
+    fresh.add_argument("--out", required=True)
+    evaluate = sub.add_parser("evaluate")
+    evaluate.add_argument("--split", choices=["dev", "heldout"], required=True)
+    evaluate.add_argument("--modes", default="fixed,scripted-adaptive")
+    evaluate.add_argument("--repetitions", type=int, default=1)
+    evaluate.add_argument("--out", required=True)
+    check = sub.add_parser("test")
+    check.add_argument("--suite", choices=["unit", "m1", "m2", "all", "provider-contract"], default="unit")
+    verifier = sub.add_parser("verify")
+    verifier.add_argument("--run-dir", required=True); verifier.add_argument("--expect", required=True)
+    args = parser.parse_args(argv)
+    if sys.version_info[:2] != (3, 11):
+        print("Use Python 3.11: py -3.11 dev.py ... on Windows", file=sys.stderr)
+        return 1
+    try:
+        if args.command == "doctor": return doctor()
+        if args.command == "build": return build()
+        if args.command == "test": return test(args.suite)
+        if args.command == "freeze-check":
+            from evaluation.freeze import check_freeze
+            print(json.dumps(check_freeze(), indent=2)); return 0
+        if args.command == "check-public":
+            from tools.public import check_public
+            print(json.dumps(check_public(), indent=2)); return 0
+        if args.command == "fresh-copy":
+            from tools.fresh_copy import fresh_copy
+            return fresh_copy(args.out)
+        if args.command == "evaluate":
+            if args.split == "heldout":
+                from evaluation.run_heldout import run_heldout
+                return run_heldout(args.out, args.modes.split(","), args.repetitions)
+            from evaluation.run_dev import run_development
+            return run_development(args.out, args.modes.split(","), args.repetitions)
+        from evaluation.verifier import verify_run
+        from agent.cli import read_json
+        print(json.dumps(verify_run(args.run_dir, read_json(args.expect)), indent=2))
+        return 0
+    except (RuntimeError, ValueError, OSError, AssertionError) as error:
+        print(str(error), file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

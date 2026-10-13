@@ -135,7 +135,15 @@ def verify_run(run_dir, expected):
     if "provider_turns" in w:
         check(0 <= int(w["provider_turns"]) <= int(w["turn_limit"]) <= 24, "persisted provider turn budget")
         check(0 <= int(w["actor_calls"]) <= 32, "persisted actor tool budget")
-        check(0 <= int(w["active_reserved_ms"]) <= 120000, "persisted active time reservation")
+        gateway = w.get("budget_policy") == "gateway-u1-1"
+        check(0 <= int(w["active_reserved_ms"]) <= (300000 if gateway else 120000), "persisted active time reservation")
+        if gateway:
+            check(w["intent"] == "offboard" and int(w["turn_limit"]) == 12, "bounded U1 offboarding policy")
+            check(0 <= int(w["cleanup_reserved_ms"]) <= 60000, "persisted separate cleanup time reservation")
+            check(bool(re.fullmatch(r"[0-9a-f]{64}", w["gateway_config_sha256"])), "explicit config identity")
+            if w["digest"]:
+                check(w.get("approved.gateway_config_sha256") == w["gateway_config_sha256"]
+                      and w.get("approved.budget_policy") == w["budget_policy"], "approval binds Gateway config")
         check(0 <= int(w["safety_calls"]) <= 12, "separate safety budget")
         for key, value in w.items():
             if key.startswith("attempts."):

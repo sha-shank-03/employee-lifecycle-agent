@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "reviewer": "main",
+  "decision": "u2a_local_root_and_copied_quickstart_passed",
+  "source_manifest_sha256": "daea583e9ee74a869dd382a39e4aae9f04ad7eca5d39869f9c04e28dab05337d",
+  "original_main_review_sha256": "7218655ab87841e962b54183f7ef20aef9f22adde9e5558818abac31dc3585e9",
+  "root_current_methods": 104,
+  "root_unchanged_historical_methods": 167,
+  "root_inventory_covered": 271,
+  "copy_groups": 9,
+  "copied_cells": 15,
+  "copied_repeated_methods": 208,
+  "public_files": 181,
+  "actual_external_sandbox_calls": 0,
+  "live_model_calls": 0,
+  "hosted_ci_executed": false,
+  "limit": "Local root/copy only; mixed-source root counts and repeated copy methods are not all fresh runs or independent business tasks."
+}

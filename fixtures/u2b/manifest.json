@@ -1,0 +1,287 @@
+{
+  "exposure": "author-exposed",
+  "independence": "Development/capability share eight semantic families. Twenty record identities and forty paired slots are not twenty independent scenario families.",
+  "labels": "Author-derived expected-state hypotheses; no U2B execution or outcome claim. Labels are scorer-only.",
+  "license": "MIT",
+  "provenance": [
+    {
+      "id": "U2B-D01",
+      "license": "MIT",
+      "source_family": "offboard-success",
+      "source_hashes": {
+        "fixtures/dev/offboard-success/driver.json": "6b1077ce121962af5d4c583597fde5d0abd97893fc68c97b543715604f2e26fa",
+        "fixtures/dev/offboard-success/expected.json": "880a859b98f56fedf616bf88527e6370b58179cebaf6a505dc3b5833b7a1079e",
+        "fixtures/dev/offboard-success/seed.json": "bb1d5f417319689e674dda6eec1a154df5b2f237850a8b89b24497550ebe10b2"
+      }
+    },
+    {
+      "id": "U2B-D02",
+      "license": "MIT",
+      "source_family": "offboard-no-approval",
+      "source_hashes": {
+        "fixtures/dev/offboard-no-approval/driver.json": "7160712af6454f033998b6269db676524c38012feed508743346d6376c850f91",
+        "fixtures/dev/offboard-no-approval/expected.json": "a49c9db26f7e25a296aec525df0d63289ac37fd1471aee9a42d4889fc9807460",
+        "fixtures/dev/offboard-no-approval/seed.json": "bb1d5f417319689e674dda6eec1a154df5b2f237850a8b89b24497550ebe10b2"
+      }
+    },
+    {
+      "id": "U2B-D03",
+      "license": "MIT",
+      "source_family": "offboard-asset-outage",
+      "source_hashes": {
+        "fixtures/dev/offboard-asset-outage/driver.json": "6b1077ce121962af5d4c583597fde5d0abd97893fc68c97b543715604f2e26fa",
+        "fixtures/dev/offboard-asset-outage/expected.json": "9f701542abadd679284a0da7e17b26f0517b9d8d4dad5fed8eb6d5cc9174f10d",
+        "fixtures/dev/offboard-asset-outage/seed.json": "106d67fbf228b5c49e40bdde295e75ff6b5f7f500efe3ea772672fee8b2fd46b"
+      }
+    },
+    {
+      "id": "U2B-D04",
+      "license": "MIT",
+      "source_family": "offboard-cancel",
+      "source_hashes": {
+        "fixtures/dev/offboard-cancel/driver.json": "176ec4588c039696839ea9e44149b4be542ca56a8896bfe96ffc4d007e6a6e08",
+        "fixtures/dev/offboard-cancel/expected.json": "7d69c2b6f7b0d3ec8b11ba2a988bedf2ed504ff1e01a5c28ef8a710c5bbb1d88",
+        "fixtures/dev/offboard-cancel/seed.json": "25eb7f5f60b759b8e8cd77066ee6a8af3f6fabdd1fb169210f0a947b9d5cbd2c"
+      }
+    },
+    {
+      "id": "U2B-D05",
+      "license": "MIT",
+      "source_family": "onboard-success",
+      "source_hashes": {
+        "fixtures/dev/onboard-success/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-success/expected.json": "2e2de25a96f7760d9c5ff84f48e2f2189f370665bbf167f36a208c400283194e",
+        "fixtures/dev/onboard-success/seed.json": "6c35c00e848031f0ad19db6cc8f94221ffa395715306659464b57ddd254a5410"
+      }
+    },
+    {
+      "id": "U2B-D06",
+      "license": "MIT",
+      "source_family": "onboard-support",
+      "source_hashes": {
+        "fixtures/dev/onboard-support/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-support/expected.json": "62cb2b49e2797fa610ac2f6ba464729e2d883e1f6c904a6e906aac5fa65252d2",
+        "fixtures/dev/onboard-support/seed.json": "d248f92a84bad18bbff9e115a910adf3deba64c68ca1c16a8bc5a4d774b834d2"
+      }
+    },
+    {
+      "id": "U2B-D07",
+      "license": "MIT",
+      "source_family": "onboard-compensation",
+      "source_hashes": {
+        "fixtures/dev/onboard-compensation/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-compensation/expected.json": "bcafd211a455db4ff3c1f03d006db0b3688ce2222e3a0f5e0c8ed66e566bf559",
+        "fixtures/dev/onboard-compensation/seed.json": "418336a2e75a39d82a79d10e63d7fb51f795852c355607c88f58807b4011955e"
+      }
+    },
+    {
+      "id": "U2B-D08",
+      "license": "MIT",
+      "source_family": "onboard-preserve-existing",
+      "source_hashes": {
+        "fixtures/dev/onboard-preserve-existing/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-preserve-existing/expected.json": "79e9ed4060975c683392e5c33cc6469effb9a0c0d14e1b7cf4f521fbedcdf0b0",
+        "fixtures/dev/onboard-preserve-existing/seed.json": "130408e8b03a4ab9f15cd0bb1462ed5c45dfe78e857457cb3962975d9d351360"
+      }
+    },
+    {
+      "id": "U2B-C01",
+      "license": "MIT",
+      "source_family": "offboard-success",
+      "source_hashes": {
+        "fixtures/dev/offboard-success/driver.json": "6b1077ce121962af5d4c583597fde5d0abd97893fc68c97b543715604f2e26fa",
+        "fixtures/dev/offboard-success/expected.json": "880a859b98f56fedf616bf88527e6370b58179cebaf6a505dc3b5833b7a1079e",
+        "fixtures/dev/offboard-success/seed.json": "bb1d5f417319689e674dda6eec1a154df5b2f237850a8b89b24497550ebe10b2"
+      }
+    },
+    {
+      "id": "U2B-C02",
+      "license": "MIT",
+      "source_family": "offboard-no-approval",
+      "source_hashes": {
+        "fixtures/dev/offboard-no-approval/driver.json": "7160712af6454f033998b6269db676524c38012feed508743346d6376c850f91",
+        "fixtures/dev/offboard-no-approval/expected.json": "a49c9db26f7e25a296aec525df0d63289ac37fd1471aee9a42d4889fc9807460",
+        "fixtures/dev/offboard-no-approval/seed.json": "bb1d5f417319689e674dda6eec1a154df5b2f237850a8b89b24497550ebe10b2"
+      }
+    },
+    {
+      "id": "U2B-C03",
+      "license": "MIT",
+      "source_family": "offboard-asset-outage",
+      "source_hashes": {
+        "fixtures/dev/offboard-asset-outage/driver.json": "6b1077ce121962af5d4c583597fde5d0abd97893fc68c97b543715604f2e26fa",
+        "fixtures/dev/offboard-asset-outage/expected.json": "9f701542abadd679284a0da7e17b26f0517b9d8d4dad5fed8eb6d5cc9174f10d",
+        "fixtures/dev/offboard-asset-outage/seed.json": "106d67fbf228b5c49e40bdde295e75ff6b5f7f500efe3ea772672fee8b2fd46b"
+      }
+    },
+    {
+      "id": "U2B-C04",
+      "license": "MIT",
+      "source_family": "offboard-cancel",
+      "source_hashes": {
+        "fixtures/dev/offboard-cancel/driver.json": "176ec4588c039696839ea9e44149b4be542ca56a8896bfe96ffc4d007e6a6e08",
+        "fixtures/dev/offboard-cancel/expected.json": "7d69c2b6f7b0d3ec8b11ba2a988bedf2ed504ff1e01a5c28ef8a710c5bbb1d88",
+        "fixtures/dev/offboard-cancel/seed.json": "25eb7f5f60b759b8e8cd77066ee6a8af3f6fabdd1fb169210f0a947b9d5cbd2c"
+      }
+    },
+    {
+      "id": "U2B-C05",
+      "license": "MIT",
+      "source_family": "onboard-success",
+      "source_hashes": {
+        "fixtures/dev/onboard-success/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-success/expected.json": "2e2de25a96f7760d9c5ff84f48e2f2189f370665bbf167f36a208c400283194e",
+        "fixtures/dev/onboard-success/seed.json": "6c35c00e848031f0ad19db6cc8f94221ffa395715306659464b57ddd254a5410"
+      }
+    },
+    {
+      "id": "U2B-C06",
+      "license": "MIT",
+      "source_family": "onboard-support",
+      "source_hashes": {
+        "fixtures/dev/onboard-support/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-support/expected.json": "62cb2b49e2797fa610ac2f6ba464729e2d883e1f6c904a6e906aac5fa65252d2",
+        "fixtures/dev/onboard-support/seed.json": "d248f92a84bad18bbff9e115a910adf3deba64c68ca1c16a8bc5a4d774b834d2"
+      }
+    },
+    {
+      "id": "U2B-C07",
+      "license": "MIT",
+      "source_family": "onboard-compensation",
+      "source_hashes": {
+        "fixtures/dev/onboard-compensation/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-compensation/expected.json": "bcafd211a455db4ff3c1f03d006db0b3688ce2222e3a0f5e0c8ed66e566bf559",
+        "fixtures/dev/onboard-compensation/seed.json": "418336a2e75a39d82a79d10e63d7fb51f795852c355607c88f58807b4011955e"
+      }
+    },
+    {
+      "id": "U2B-C08",
+      "license": "MIT",
+      "source_family": "onboard-preserve-existing",
+      "source_hashes": {
+        "fixtures/dev/onboard-preserve-existing/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-preserve-existing/expected.json": "79e9ed4060975c683392e5c33cc6469effb9a0c0d14e1b7cf4f521fbedcdf0b0",
+        "fixtures/dev/onboard-preserve-existing/seed.json": "130408e8b03a4ab9f15cd0bb1462ed5c45dfe78e857457cb3962975d9d351360"
+      }
+    },
+    {
+      "id": "U2B-C09",
+      "license": "MIT",
+      "source_family": "offboard-restart",
+      "source_hashes": {
+        "fixtures/dev/offboard-restart/driver.json": "db0d9baf451e8dcde8214ce539e9d2d89f7d896b2f125155f63105f37b3c5600",
+        "fixtures/dev/offboard-restart/expected.json": "792aebdae209241c00fc1ef798e665778e450aacf9fe9de002146c2442ef20b5",
+        "fixtures/dev/offboard-restart/seed.json": "bb1d5f417319689e674dda6eec1a154df5b2f237850a8b89b24497550ebe10b2"
+      }
+    },
+    {
+      "id": "U2B-C10",
+      "license": "MIT",
+      "source_family": "onboard-no-approval",
+      "source_hashes": {
+        "fixtures/dev/onboard-no-approval/driver.json": "3ac04302a5a78e7f095fb7576a88e1a11924b5f4c9308592050f1bcfb442afeb",
+        "fixtures/dev/onboard-no-approval/expected.json": "bfd00075482bf538bd2cf9d7445abe855cb65a0f67385f11b9980f17b493a5d2",
+        "fixtures/dev/onboard-no-approval/seed.json": "c3b70f734d190fd41ac04520461a24d5e6e287ed9ae18827f04deceaee20ac0c"
+      }
+    },
+    {
+      "id": "U2B-C11",
+      "license": "MIT",
+      "source_family": "onboard-budget-exhaustion",
+      "source_hashes": {
+        "fixtures/dev/onboard-budget-exhaustion/driver.json": "a68b7e7ccb7d1aab5585defc99b5d7119154ce69a8d1b7ee317e2d57318ff29a",
+        "fixtures/dev/onboard-budget-exhaustion/expected.json": "ae4fd9340c25109361c749f04265d31d6cf7e8ffc3a5f2834d713828179043b9",
+        "fixtures/dev/onboard-budget-exhaustion/seed.json": "8c0705eeaad29431a0cdb6cbb8aa93bea124bf51748b1ecae610707d7ec43bc3"
+      }
+    },
+    {
+      "id": "U2B-C12",
+      "license": "MIT",
+      "source_family": "onboard-superseded",
+      "source_hashes": {
+        "fixtures/dev/onboard-superseded/driver.json": "8504846a59996abb9cde409020b159c148574a9c0a53e2c3f0fa112fa90475dc",
+        "fixtures/dev/onboard-superseded/expected.json": "1f7bde35c25cc0afbc26b6b42f1f2e4ee79a7576353b49544094fab44721d858",
+        "fixtures/dev/onboard-superseded/seed.json": "17373c1c5710ec02506646b7c142d2a5a2885777a5abafccd3f74408f540da6b"
+      }
+    }
+  ],
+  "scenario_families": 12,
+  "schema": 1,
+  "source": "Existing repository fixtures/dev; fictional identities, assets and event sequences remapped. No new domain semantics.",
+  "splits": {
+    "capability": {
+      "families": [
+        "offboard_asset_outage",
+        "offboard_cancel",
+        "offboard_no_approval",
+        "offboard_restart",
+        "offboard_success",
+        "onboard_budget_exhaustion",
+        "onboard_compensation",
+        "onboard_no_approval",
+        "onboard_preserve_existing",
+        "onboard_success",
+        "onboard_superseded",
+        "onboard_support"
+      ],
+      "ids": [
+        "U2B-C01",
+        "U2B-C02",
+        "U2B-C03",
+        "U2B-C04",
+        "U2B-C05",
+        "U2B-C06",
+        "U2B-C07",
+        "U2B-C08",
+        "U2B-C09",
+        "U2B-C10",
+        "U2B-C11",
+        "U2B-C12"
+      ],
+      "inputs": {
+        "path": "fixtures/u2b/capability-inputs.jsonl",
+        "sha256": "80491d3835953e2803722c866e29e502d98a163d46c20e031e5c8c2e990fa8e7"
+      },
+      "labels": {
+        "path": "fixtures/u2b/capability-labels.jsonl",
+        "sha256": "02b87a691b6a5f212e55ba812d56d3289724377a288f1fc77e3a4a19fcf23a34"
+      },
+      "tasks": 12
+    },
+    "development": {
+      "families": [
+        "offboard_asset_outage",
+        "offboard_cancel",
+        "offboard_no_approval",
+        "offboard_success",
+        "onboard_compensation",
+        "onboard_preserve_existing",
+        "onboard_success",
+        "onboard_support"
+      ],
+      "ids": [
+        "U2B-D01",
+        "U2B-D02",
+        "U2B-D03",
+        "U2B-D04",
+        "U2B-D05",
+        "U2B-D06",
+        "U2B-D07",
+        "U2B-D08"
+      ],
+      "inputs": {
+        "path": "fixtures/u2b/development-inputs.jsonl",
+        "sha256": "1bfae6150bd716807949e8b505d15217b5512c427b80992a2fd271a2a51dd4e3"
+      },
+      "labels": {
+        "path": "fixtures/u2b/development-labels.jsonl",
+        "sha256": "ff8c47849a070114f48593be9a323294c5eadee932fe64089b1e227a4e736882"
+      },
+      "tasks": 8
+    }
+  },
+  "synthetic": true,
+  "unique_records": 20,
+  "unseen": false,
+  "version": "u2b-author-exposed-1"
+}
