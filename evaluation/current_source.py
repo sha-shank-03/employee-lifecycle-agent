@@ -9,6 +9,7 @@ from tools.public import public_files
 
 MANIFEST = "evaluation/upgrade/current-manifest.json"
 ANCHORS = {
+    "u2b-packaging-source-3": ("evaluation/upgrade/history/u2b-packaging-source-3.json", "ec578a2b782a0655673320a0ef0aa6c7b57b56c7ab1551a5926ef3c46cab02ea"),
     "u2b-evaluation-source-2": ("evaluation/upgrade/history/u2b-evaluation-source-2.json", "42d998f29b636e627eebe8011f861e268abaa020d2e84387d01200953f28c2ad"),
     "u2b-evaluation-source-1": ("evaluation/upgrade/history/u2b-evaluation-source-1.json", "733259be6f410953a6599c74b67118d6dad365907b382e657e6e494ccd8bb061"),
     "u2a-transport-phase-source-1": ("evaluation/upgrade/history/u2a-transport-phase-source-1.json", "daea583e9ee74a869dd382a39e4aae9f04ad7eca5d39869f9c04e28dab05337d"),
@@ -61,8 +62,8 @@ def check_current_source(root=ROOT):
 
     manifest = load(MANIFEST)
     need(type(manifest["schema"]) is int and manifest["schema"] == 1
-         and manifest["version"] == "u2b-packaging-source-3"
-         and manifest["status"] == "source-ready-standalone-pure-correction"
+         and manifest["version"] == "u2c-packaging-source-4"
+         and manifest["status"] == "source-ready-public-full40-projection"
          and manifest["remote_dispatch_enabled"] is False and manifest["self_accepted"] is False,
          "unknown current packaging manifest")
     files = public_files(root)
@@ -72,7 +73,7 @@ def check_current_source(root=ROOT):
     profile(load(manifest["profile_path"]))
     cursor, mapping, snapshots, archives = manifest, {}, {}, {}
     predecessors = {}
-    for version in ("u2b-evaluation-source-2", "u2b-evaluation-source-1", "u2a-transport-phase-source-1", "u2a-packaging-source-1", "u2a-source-1", "u1-source-3", "u1-source-2", "u1-source-1"):
+    for version in ("u2b-packaging-source-3", "u2b-evaluation-source-2", "u2b-evaluation-source-1", "u2a-transport-phase-source-1", "u2a-packaging-source-1", "u2a-source-1", "u1-source-3", "u1-source-2", "u1-source-1"):
         cursor, archived = advance(cursor, version, mapping)
         snapshots[version], archives[version] = len(cursor["files"]), archived
         predecessors[version] = cursor
@@ -131,6 +132,15 @@ def check_current_source(root=ROOT):
              ==(4,2,2) and (first["remaining_records"],first["remaining_slots"],first["assertions"],first["negative_controls"])
              ==(18,36,99,5) and len(first["first_raw_files"])==274 and first["population_completed"] is False,
          "first U2B review accounting changed")
+    from evaluation.u2b_receipt import RECEIPT, RECONCILIATION, MAIN_REVIEW, check_receipt
+    receipt_meta = manifest["full40_projection"]
+    need(receipt_meta == {"path": RECEIPT, "sha256": sha(target(RECEIPT)),
+         "original_reconciliation_sha256": RECONCILIATION, "independent_packaging_review_sha256": MAIN_REVIEW},
+         "full40 projection binding changed")
+    projection = check_receipt(root)
+    need(projection["slots"] == 40 and projection["business_completions"] == 14
+         and projection["expected_safe_stops"] == 26 and projection["private_raw_verified"] is False,
+         "full40 projection scope changed")
     return {"passed": True, "version": manifest["version"], "current_public_files": len(files),
             "current_hashed_files": len(manifest["files"]), "predecessor_hashed_files": snapshots,
             "exact_predecessor_source_archives": archives, "original_frozen_files": len(v1["files"]),
@@ -140,6 +150,8 @@ def check_current_source(root=ROOT):
             "current_u2b_evaluation_executed": False, "author_exposed_unique_records":20,"scenario_families":12,
             "first_u2b_native_slots_main_accepted":4,"first_actual_completions":2,"first_expected_safe_compensations":2,
             "remaining_initial_intent_slots":36,"current_catalog_continuation_executed":False,
+            "historical_full40_projected_slots":40,"historical_business_completions":14,
+            "historical_expected_safe_stops":26,"private_full40_raw_verified_now":False,
             "limit": "Complete public inventory/hash and retained lineage gate only; execution evidence is separate."}
 
 if __name__ == "__main__": print(json.dumps(check_current_source(), indent=2, sort_keys=True))

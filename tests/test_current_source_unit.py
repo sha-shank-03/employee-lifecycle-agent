@@ -38,7 +38,7 @@ class CurrentSourcePure(unittest.TestCase):
     def test_current_gate_covers_all_public_bytes_and_preserved_lineage(self):
         result = check_current_source()
         self.assertEqual(result["current_hashed_files"], len(public_files())-1)
-        self.assertEqual(result["predecessor_hashed_files"], {"u2b-evaluation-source-2":210,"u2b-evaluation-source-1":199,"u2a-transport-phase-source-1":180,"u2a-packaging-source-1":169,"u2a-source-1":159, "u1-source-3":147, "u1-source-2":137, "u1-source-1":128})
+        self.assertEqual(result["predecessor_hashed_files"], {"u2b-packaging-source-3":219,"u2b-evaluation-source-2":210,"u2b-evaluation-source-1":199,"u2a-transport-phase-source-1":180,"u2a-packaging-source-1":169,"u2a-source-1":159, "u1-source-3":147, "u1-source-2":137, "u1-source-1":128})
         self.assertEqual(result["original_frozen_files"], 40)
         self.assertEqual(result["v1_source_archives"], 7)
         self.assertFalse(result["remote_dispatch_enabled"])
@@ -68,17 +68,17 @@ class CurrentSourcePure(unittest.TestCase):
         self.update_current_hash(root, relative)
         with self.assertRaisesRegex(AssertionError, "source hash mismatch"): check_current_source(root)
     def test_rehashed_original_manifest_cannot_replace_pinned_predecessor(self):
-        root = self.source(); relative, _ = ANCHORS["u2b-evaluation-source-2"]
+        root = self.source(); relative, _ = ANCHORS["u2b-packaging-source-3"]
         p = root/relative; value = json.loads(p.read_text()); value["files"].pop("agent/entra_contract.py")
         p.write_text(json.dumps(value)); self.update_current_hash(root, relative)
         current = self.current(root); current["prior_manifest"]["sha256"] = sha(p); self.write_current(root, current)
         with self.assertRaisesRegex(AssertionError, "predecessor manifest changed"): check_current_source(root)
     def test_omitted_snapshot_mapping_does_not_skip_old_hash(self):
-        root = self.source(); value = self.current(root); del value["prior_source_archives"]["tests/test_u2b_catalog_unit.py"]
+        root = self.source(); value = self.current(root); del value["prior_source_archives"]["dev.py"]
         self.write_current(root, value)
-        with self.assertRaisesRegex(AssertionError, "u2b-evaluation-source-2:tests/test_u2b_catalog_unit.py"): check_current_source(root)
+        with self.assertRaisesRegex(AssertionError, "u2b-packaging-source-3:dev.py"): check_current_source(root)
     def test_archive_escape_is_rejected_before_read(self):
-        root = self.source(); value = self.current(root); value["prior_source_archives"]["tests/test_u2b_catalog_unit.py"] = "../outside.py"
+        root = self.source(); value = self.current(root); value["prior_source_archives"]["dev.py"] = "../outside.py"
         self.write_current(root, value)
         with self.assertRaisesRegex(AssertionError, "invalid source path"): check_current_source(root)
     def test_rehashed_old_lineage_and_main_receipt_tamper_cannot_pass(self):

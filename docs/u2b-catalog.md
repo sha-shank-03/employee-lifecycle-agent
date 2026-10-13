@@ -1,51 +1,37 @@
-# U2B catalog continuation — 13 October 2026
+# U2B catalog accounting and public evidence
 
-This is additive accounting for the existing author-exposed catalog. It adds no records, actor behavior, domain semantics, tools or permissions. The original twenty inputs/gold, approval schedules, per-task budgets, baseline, Java, provider loop and verifier/metrics remain unchanged. The original source-phase report below describes the initial four-slot evidence; later local main reviews are separate from this packaging correction. The correction runs no continuation actors and grants no heavy lease.
+The original 20 records and 40 policy slots are complete. Main reviewed 14 business completions and 26 expected safe stops under the original execution identities. See the [case study](u2b-full40.md) and [projected receipt](../evaluation/receipts/u2b-full40.json) for outcomes, comparisons and limits. This source4 checkpoint changes documentation, static projection checks and packaging lineage only. Actors, scoring, Java, inputs/gold, approvals and budgets are unchanged.
 
-## Original results and remaining population
+## Original design and identities
 
-Main accepted the original D01/D07 four-slot slice at source manifest `733259be6f410953a6599c74b67118d6dad365907b382e657e6e494ccd8bb061`. Both policies completed D01 departure; both safely compensated D07 joining asset outage. The results are two actual completions plus two expected safe recoveries. They remain under the exact original intent, ledger, source/data and 274 saved-file hashes. The sanitized authentic main review binds its original review hash and records 99 independent assertions/five negative controls. Neither compensation becomes a business completion.
+The first D01/D07 slice contains four slots under source1: two completed departures and two safe joining compensations. Its original 274-file evidence binding and main review remain unchanged. The source2 catalog predeclared the other 18 records and 36 slots before actor entry. Its 108-event journal now contains the completed STARTED, CAPTURED and CLASSIFIED sequence for those 36 slots. The same 20 correlated author-exposed synthetic records span 12 families; they are not 40 independent problems or an unseen evaluation.
 
-The remaining population is six development and twelve capability records: eighteen record identities/thirty-six policy slots. Together with the first four slots, the catalog has twenty records/forty slots across twelve scenario families. Eight families are shared between development and capability. These are correlated, synthetic, author-exposed MIT fixtures derived from existing dev semantics, with unchanged expected-state hypotheses. They are not unseen tasks, forty independent problems or live provider quality evidence.
+Later source3 packaging fixed a fresh-checkout unit-test dependency on private native files. Main executed the final native slices in explicitly reviewed historical source2 windows and restored source3 afterward. This projection checkpoint preserves source1, source2 and source3 separately; no old intent, event, result or source identity is rewritten.
 
-`evaluation.u2b_catalog plan` produces the complete frozen intent. It includes the original first binding, all forty slot identities, the complete remaining thirty-six-slot roster, input/approval/budget hashes and separate label digests. Labels stay outside actor requests. The default initial report has four observed original outcomes and thirty-six unexecuted slots. Two verified completions out of forty intended slots is an accounting lower bound; the observed original rate is two out of four. Unknown remainder outcomes do not become failures or successes.
+## Durable entry and stop rules
 
-## Durable entry and stop behavior
+The production catalog remains at `runs/u2b-catalog-20261012`. Initialization rejects an existing or partial registry. Every slot publishes STARTED before actor entry, then CAPTURED with actor return/failure/timeout, elapsed time, decision digest and raw-file hashes before classification. Independent scoring follows after actor bridges close. A draft or exit zero cannot confer success.
 
-`init` publishes one immutable intent at fixed path `runs/u2b-catalog-20261012` before any actor entry. The date is the original catalog identity, retained on resume. Existing or partially initialized directories are rejected; a fresh replacement population is not created automatically.
+Failed, timed-out, unknown, unexpected or incomplete entries stop before another slot. Started slots cannot replay, including a partially executed pair; no replacement population is created. Reports recheck captured raw bindings and stored verdicts without invoking an actor or filling missing classifications. Pending writes and crash locks remain for review. Publishing uses an exclusive pending file, flush, file fsync and rename. This is process-interruption accounting, not a portable Windows power-loss guarantee.
 
-Every later slot records serial STARTED, CAPTURED and CLASSIFIED events in a numbered hash chain. STARTED is published before actor entry. CAPTURED records the actor return/failure/timeout type, redacted error type, elapsed time, decision digest and exact saved raw-file hashes before any label-based scoring. Independent scoring follows only after the actor bridges close. A returned draft or success flag does not establish completion. FAILED/TIMEOUT/UNKNOWN and unexpected expected-state checks stop the slice before another slot starts. Expected BLOCKED/AWAITING_APPROVAL/compensation states can pass the expected contract while actual completion stays false.
+Exact source, dataset, input, approval, budget, intent, state and cached class bindings remain required. Historical intent under current source is rejected by design. No public projection, synthetic fixture or convenience override substitutes for genuine native evidence. There are no unstarted slots left to schedule.
 
-Publishing uses an exclusive pending file, flush/file fsync and rename. A write failure or process interruption retains pending, STARTED or CAPTURED evidence, blocks further actor entry and reports unknown/unclassified outcomes. It does not discard or replay an entry. This provides process-interruption accounting; it is not a portable Windows power-loss guarantee. A crash can leave the exact exclusive `active.lock` sentinel. It is not automatically cleared; main reviews the preserved state and process evidence.
-
-A slot that was started is never replayed, including when it failed, timed out or has unknown results. Selection accepts at most two canonical record pairs for which both policy slots are untouched. A partially executed pair stays visible and is not silently replaced. An unexpected or incomplete catalog remains stopped for a new main decision; there is no automatic reset, repair, retry, expansion or full-evaluation command.
-
-Before new actor entry, reports recheck prior raw-file bindings and independent verdicts. Changed evidence, forged completion/counts, missing events, altered authority/budget identities and orphan outputs fail closed. Reporting is read only and never publishes a missing classification or invokes an actor. It exposes original/remainder counts, all forty slot identities, unexecuted/unknown slot IDs, status counts, source/data bindings, policy/family aggregates, observed versus intended denominators, safe stops and null unknown usage/cost. Original scoring still determines due-approved departure revocation from independent HR/approval histories; joining is N/A (0/0/null).
-
-## Commands and bounded grants
+## Public checks
 
 ```powershell
-py -3.11 dev.py test --suite u2b-catalog-unit
-py -3.11 dev.py source-check
-py -3.11 -m evaluation.u2b_catalog_controls
+py -3.11 -B dev.py source-check
+py -3.11 -B -m evaluation.u2b_receipt
+py -3.11 -B dev.py test --suite receipt-unit
+py -3.11 -B dev.py test --suite u2b-catalog-unit
+py -3.11 -B -m evaluation.u2b_catalog_controls
 ```
 
-These commands work from a fresh public checkout without saved runs, cached Java classes or private coordination. The focused suite guards Popen/socket creation and mocks actor entry. Its first four modeled slots are explicitly constructed accounting fixtures; they are not a copy, replacement or verification of genuine first-run evidence. The control demo emits `evidence_kind=synthetic-unit-control`, `native_evidence_verified=false`, a null main-review binding and modeled denominators. No acting agent receives these fixture verdicts. Four additional controls verify standalone operation, unchanged rejection of absent/partial native evidence, dataset hash tampering and explicit CLI provenance.
+The receipt checker validates projected arithmetic, known input/approval/budget/label identities, counter consistency and source attribution using public files. It explicitly reports that private raw state was not verified and native outcomes were not reexecuted. The original review digests refer to private originals, not the projection's byte identity.
 
-Production `plan` and `preview` require the authentic original 274-file local evidence set, including private generated artifacts. Those files are deliberately absent from a public checkout. A redacted main review alone cannot replace raw state verification. `preview` refuses to hide an existing registry; use `report` once main has initialized it. Production `first_binding`, raw integrity checks, scoring and grant validation are unchanged. The standalone control fixture cannot satisfy the production intent comparison or authenticate missing evidence.
+Catalog unit controls and the standalone control demo use explicit synthetic bookkeeping fixtures and no saved native run. Their modeled counts are not historical business evidence. Production `plan`, `preview`, `init`, `report` and `run` still require authentic original files and exact historical source context; a redacted review alone is insufficient. These commands are not a fresh-checkout reproduction of the completed 40 slots.
 
-After independent main review, the sole proposed next slice is D02 (no departure approval) and D03 (departure asset outage), once per offline policy. Both are untouched records from the original population. No outcomes or uplift are assumed. Main's matching grant binds source/data, entire intent, current event-state hash, exact selected input/authority/budget identities and fourteen cached class hashes.
+## Boundaries
 
-```powershell
-py -3.11 -m evaluation.u2b_catalog init --catalog runs/u2b-catalog-20261012
-py -3.11 -m evaluation.u2b_catalog run --catalog runs/u2b-catalog-20261012 --ids U2B-D02,U2B-D03 --main-grant <main-supplied-grant.json>
-py -3.11 -m evaluation.u2b_catalog report --catalog runs/u2b-catalog-20261012
-```
+Both offline policies complete 7/20 with 20 paired ties and no completion uplift. Safe stops preserve authority and business invariants while leaving work unfinished. Actual policy decisions, kernel turns, direct harness actions, actor tools, safety calls, effects and zero-effect receipts remain distinct. D04's old review field of five is preserved beside four actual decisions and five kernel turns. C09 crashes and C12 superseding events are harness supplied, not autonomous model behavior.
 
-The local procedural grant requires main ownership, ACTIVE state, a named `employee-u2b-catalog-...` lease, exact selected canonical pairs and inherited `evaluation.u2b.RESOURCES`. It also requires at least 240 seconds to expiry for command/teardown. This is not cryptographic authorization. Main still enforces the 180-second command and 300-second active-lease caps, RAM768MiB/disk128MiB/Java1/Python2 including launcher, with HTTP servers/downloads/spend/external calls zero. No build or provider/model/account access occurs automatically. The unchanged inner actor limits may exceed the remaining outer time; main must retain interrupted slots and process-tree timeout/cleanup receipts.
-
-The proposed active allocation includes 10-second pre/post source gates, a 10-second metadata init, 180-second slice, 10-second pure report and 60-second teardown (280 seconds), leaving 20 seconds reserve. A new native command must not start merely because source/pure checks pass. The remaining full catalog, native journal/write-interruption behavior, operating peaks/cleanup, actual Entra, live/unseen comparison, hosted CI and publication remain pending.
-
-## Source lineage
-
-`u2b-evaluation-source-2` preserves the exact first-source manifest and six changed predecessor snapshots. It verifies that predecessor's 199 source hashes and every older lineage. The original twenty authored input/gold rows are byte-preserved; expected outcomes are not tuned or reclassified. Earlier timeouts, crash-monitor/phase failures, U1/U2A acceptance and the first four native receipts remain separate historical evidence. Main owns acceptance of this continuation.
+Tokens are unknown for every slot. Offline API charges are recorded as zero; system and live-provider costs remain unknown. Serial timing and sampled resource peaks are descriptive. Actual Entra, live/unseen comparison, final acceptance and the demo gate remain pending. Prior failed source, packaging, preentry, native and audit receipts remain retained under their original identities.

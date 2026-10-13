@@ -46,7 +46,8 @@ def test_patterns(suite):
     selected = {"u1-unit": ["test_gateway_u1_unit.py"], "u1-integration": ["test_gateway_u1_integration.py"],
                 "entra-unit": ["test_entra_u2a_unit.py"], "entra-loopback": ["test_entra_u2a_loopback.py"],
                 "packaging-unit": ["test_public_unit.py", "test_current_source_unit.py"],
-                "u2b-unit": ["test_u2b_unit.py"], "u2b-catalog-unit": ["test_u2b_catalog_unit.py"]}
+                "u2b-unit": ["test_u2b_unit.py"], "u2b-catalog-unit": ["test_u2b_catalog_unit.py"],
+                "receipt-unit": ["test_u2b_receipt_unit.py"]}
     if suite in selected: return selected[suite]
     if suite not in {"unit", "m1", "m2", "all", "provider-contract"}: raise ValueError("unknown test suite")
     patterns = []
@@ -62,7 +63,8 @@ def test_patterns(suite):
         patterns.append("test_provider_unit.py")
     if suite in {"unit", "all"}:
         patterns.extend(("test_gateway_u1_unit.py", "test_metrics_unit.py", "test_public_unit.py",
-                         "test_entra_u2a_unit.py", "test_current_source_unit.py", "test_u2b_unit.py", "test_u2b_catalog_unit.py"))
+                         "test_entra_u2a_unit.py", "test_current_source_unit.py", "test_u2b_unit.py", "test_u2b_catalog_unit.py",
+                         "test_u2b_receipt_unit.py"))
     if suite in {"all", "provider-contract"}:
         patterns.append("test_provider_http.py")
     if suite == "all": patterns.append("test_entra_u2a_loopback.py")
@@ -79,7 +81,7 @@ def test(suite):
     if suite.startswith("u1-"): report["mode"] = "local-double"
     if suite.startswith("entra-"): report["mode"] = "injected-double"
     if suite == "packaging-unit": report["mode"] = "source-pure"
-    if suite in {"u2b-unit","u2b-catalog-unit"}: report["mode"] = "source-pure-synthetic-controls"
+    if suite in {"u2b-unit","u2b-catalog-unit","receipt-unit"}: report["mode"] = "source-pure-synthetic-controls"
     print(json.dumps(report))
     return 0 if result.wasSuccessful() and not result.skipped else 1
 
@@ -101,7 +103,7 @@ def main(argv=None):
     evaluate.add_argument("--out", required=True)
     check = sub.add_parser("test")
     check.add_argument("--suite", choices=["unit", "m1", "m2", "all", "provider-contract", "u1-unit", "u1-integration",
-                                          "entra-unit", "entra-loopback", "packaging-unit", "u2b-unit", "u2b-catalog-unit"], default="unit")
+                                          "entra-unit", "entra-loopback", "packaging-unit", "u2b-unit", "u2b-catalog-unit", "receipt-unit"], default="unit")
     verifier = sub.add_parser("verify")
     verifier.add_argument("--run-dir", required=True); verifier.add_argument("--expect", required=True)
     args = parser.parse_args(argv)
